@@ -1,0 +1,39 @@
+import java.awt.GraphicsConfiguration;
+import java.awt.HeadlessException;
+
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
+
+@SuppressWarnings("serial")
+public class HelpScreen extends JFrame {
+
+	public HelpScreen() throws HeadlessException {
+		// TODO Auto-generated constructor stub.
+		this.setSize(280, 180);
+
+		String str = "  Use arrow keys to move the ship.\n  Hit 1, 2, or 3 to select a weapon. S to fire.\n  P to pause.\n\n  Debugging: \n  U/D to go up or down a level \n  +/- to adjust refresh rate";
+		JTextArea helpText = new JTextArea(str);
+		helpText.setEditable(false);
+		this.add(helpText);
+		this.setTitle("Instructions");
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setVisible(true);
+	}
+
+	public HelpScreen(GraphicsConfiguration gc) {
+		super(gc);
+		// TODO Auto-generated constructor stub.
+	}
+
+	public HelpScreen(String title) throws HeadlessException {
+		super(title);
+
+	}
+
+	public HelpScreen(String title, GraphicsConfiguration gc) {
+		super(title, gc);
+		// TODO Auto-generated constructor stub.
+	}
+
+}

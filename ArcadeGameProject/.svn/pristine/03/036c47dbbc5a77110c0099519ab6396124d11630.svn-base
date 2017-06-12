@@ -1,0 +1,130 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+
+public class StartScreen {
+
+	private JFrame mainFrame;
+	protected JPanel gameDescription;
+	protected JPanel startGameButton;
+	protected JLabel titleImage;
+	protected Scoreboard scoreBoard;
+	private ArcadeGame game;
+	private ArcadeGameComponent agc;
+
+	public StartScreen(ArcadeGame game, JFrame frame, Scoreboard board) throws IOException {
+
+		this.game = game;
+
+		this.mainFrame = frame;
+
+		this.scoreBoard = board;
+		
+		InputStream in = new FileInputStream("Gw_boss5.wav");
+		AudioStream audioStream = new AudioStream(in);
+		AudioPlayer.player.start(audioStream);
+		
+		initImage();
+		initDescription();
+		initButton();
+
+		this.mainFrame.add(this.titleImage, BorderLayout.NORTH);
+		this.mainFrame.add(this.gameDescription, BorderLayout.CENTER);
+		this.mainFrame.add(this.startGameButton, BorderLayout.SOUTH);
+	}
+
+	public void initImage() {
+
+		BufferedImage image = null;
+
+		try {
+			image = ImageIO.read(new File("centipedeMainImage.png"));
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
+
+		this.titleImage = new JLabel(new ImageIcon(image));
+	}
+
+	public void initDescription() {
+
+		this.gameDescription = new JPanel();
+		
+		JTextArea textDescription = new JTextArea();
+		
+		textDescription.setText("Welcome to our Game ! \n"
+				+ " Created by Anthony De Rada, Daniel Verlaque, Bochuan Lu \n"
+				+ "Hope you enjoy it as much as we enjoyed making it");
+		textDescription.setBackground(Color.BLACK);
+		//textDescription.setFont(new Font("Impact", Font.BOLD, 14));
+		textDescription.setOpaque(true);
+		textDescription.setForeground(Color.WHITE);
+		textDescription.setLineWrap(true);
+		textDescription.setWrapStyleWord(true);
+		textDescription.setEditable(false);
+		
+		this.gameDescription.add(textDescription);
+	}
+
+	public void initButton() {
+
+		this.startGameButton = new JPanel();
+		this.startGameButton.setLayout(new GridLayout(3, 3));
+		this.startGameButton.setBackground(Color.BLACK);
+
+		JButton startButton = new JButton("Stat Game");
+		startButton.setFocusable(false);
+		startButton.setSize(10, 10);
+
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(startButton);
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+		this.startGameButton.add(new JLabel());
+
+		startButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent y) {
+
+				startGame();
+			}
+		});
+	}
+
+	public void startGame() {
+
+		this.gameDescription.remove(0);
+		this.gameDescription.setVisible(false);
+		this.startGameButton.setVisible(false);
+
+		this.agc = new ArcadeGameComponent(this.game);
+		
+		this.mainFrame.add(this.scoreBoard, BorderLayout.SOUTH);
+		this.mainFrame.add(this.agc);
+		
+		this.agc.requestFocusInWindow();
+	}
+}

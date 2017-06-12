@@ -1,0 +1,168 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+/**
+ * Represents the HighestScoresBoard of the Arcade Game.
+ *
+ * @author deradaam, lub and verlaqd. Created Nov 11, 2015.
+ */
+public class HighestScoresBoard {
+	private static final int FRAME_WIDTH = 400+20;
+	private static final int FRAME_HEIGHT = 350+107;
+	private static final int FONT_SIZE = 15;
+	private static final int LABEL_WIDTH = 400;
+	private static final int LABEL_HEIGHT = 40;
+
+	private ArcadeGame game;
+	protected JLabel titleImage;
+	private JFrame frame;
+	private JLabel label;
+	private JPanel panel;
+	private JButton button;
+	private int[] topScores = new int[5];
+	private String[] playerNames = new String[5];
+	private int newScore;
+	private String newName;
+	private int index = -1;
+
+	/**
+	 * Constructs a HighestScoresBoard with the given name and score.
+	 *
+	 * @param name
+	 * @param score
+	 */
+	public HighestScoresBoard(ArcadeGame game,String inputName, int score) {
+		String name=inputName;
+		if(name==null){
+			name="";
+		}
+		if (name.isEmpty() || name.startsWith(" ")) {
+			name = "*";
+		}
+		this.game=game;
+		this.newName = name;
+		this.newScore = score;
+		this.frame = new JFrame("HighestScores!!!");
+		this.panel = new JPanel();
+		this.button=new JButton("Restart");
+		
+		BufferedImage image = null;
+
+		try {
+			image = ImageIO.read(new File("centipedeMainImage.png"));
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
+
+		this.titleImage = new JLabel(new ImageIcon(image));
+	}
+
+	/**
+	 * Scans the file which stores the highest scores.
+	 *
+	 * @throws FileNotFoundException
+	 */
+	public void scanFile() throws FileNotFoundException {
+		Scanner input = new Scanner(new File("HighestScores.txt"));
+		for (int i = 0; i < 5; i++) {
+			this.playerNames[i] = input.next();
+			this.topScores[i] = input.nextInt();
+		}
+		input.close();
+	}
+
+	/**
+	 * Sorts and indexs the new player's scores in the right place.
+	 *
+	 */
+	public void sort() {
+		for (int i = 0; i < 5; i++) {
+			if (this.newScore > this.topScores[i]) {
+				this.index = i;
+				break;
+			}
+		}
+		if (this.index != -1) {
+			for (int i = 4; i > this.index; i++) {
+				this.topScores[i] = this.topScores[i - 1];
+				this.playerNames[i] = this.playerNames[i - 1];
+			}
+			this.topScores[this.index] = this.newScore;
+			this.playerNames[this.index] = this.newName;
+		}
+
+	}
+
+	/**
+	 * Prints out the result and changes the highest scores file.
+	 *
+	 * @throws FileNotFoundException
+	 */
+	public void outPut() throws FileNotFoundException {
+		java.io.PrintStream output = new java.io.PrintStream("HighestScores.txt");
+		
+		for (int i = 0; i < 5; i++) {
+			System.out.println(this.playerNames[i] + " " + this.topScores[i]);
+			this.label = new JLabel(this.playerNames[i] + " " + this.topScores[i]);
+			this.label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+			this.label.setFont(new Font("Helvetica", Font.BOLD, FONT_SIZE));
+			this.panel.add(this.label);
+			output.println(this.playerNames[i] + " " + this.topScores[i]);
+		}
+		output.flush();
+
+		output.close();
+		if (this.index == -1) {
+			System.out.println("Sorry, you are not in the board");
+			this.label = new JLabel("Sorry, you are not in the board");
+		} else {
+			System.out.println("Good Job!");
+			this.label = new JLabel("Good Job!");
+		}
+		ActionListener restart= new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					HighestScoresBoard.this.game.restart();
+					HighestScoresBoard.this.frame.setVisible(false);
+				} catch (IOException exception) {
+					exception.printStackTrace();
+				}
+			}
+			
+		};
+		this.button.addActionListener(restart);
+		this.label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+		this.label.setFont(new Font("Helvetica", Font.BOLD, FONT_SIZE));
+		this.panel.add(this.label);
+		this.panel.add(this.button);
+		this.frame.add(this.panel,BorderLayout.CENTER);
+		this.frame.add(this.titleImage,BorderLayout.NORTH);
+		this.frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+		this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		this.frame.setVisible(true);
+	}
+
+	public void showResult() throws FileNotFoundException{
+		this.scanFile();
+		this.sort();
+		this.outPut();
+	}
+}

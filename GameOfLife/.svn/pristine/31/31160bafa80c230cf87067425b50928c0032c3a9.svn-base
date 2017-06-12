@@ -1,0 +1,245 @@
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.Timer;
+
+/**
+ * This class is the starting point for the simulator for Conway's Game of Life.
+ * 
+ * @author lub, verlaqd. Created Sept. 28, 2015.
+ */
+public class GameOfLifeMain {
+
+	private static final int WIDTH = 630;
+	private static final int HEIGHT = 750;
+	private static int DELAY = 50; // milliseconds
+
+	/**
+	 * Starts the program
+	 * 
+	 * @param args
+	 *            ignored
+	 * @throws InterruptedException
+	 */
+	public static void main(String[] args) throws InterruptedException {
+		JFrame frame = new JFrame();
+		final int WIDTH_OFFSET = 18;
+		final int HEIGHT_OFFSET = -49;
+
+		frame.setSize(WIDTH + WIDTH_OFFSET, HEIGHT + HEIGHT_OFFSET);
+		frame.setTitle("Conway's Game of Life");
+
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		// coordList.addAll(getGliderList());
+		// coordList.addAll(getOctagonList());
+		// coordList.addAll(getFunList());
+		// //
+		// coordList.addAll(stringArrayListToCoords(doubleGliderGun(),25,35));
+		// //
+		// //
+		// coordList.addAll(stringArrayListToCoords(funCoords(), 40, 0));
+		// coordList.addAll(stringArrayListToCoords(funCoords(), 0, 40));
+		// coordList.addAll(stringArrayListToCoords(funCoords(), 40, 40));
+
+		// I know these shouldn't technically be capitalized, but I'm doing it
+		// anyway
+		String GAME_OF_LIFE = "0x000111111000111000100010011111x00010000000100010011011001x00010000000100010010101001x00010001100111110010001001111x00010000100100010010001001x000111111001000100100010011111x0x0x00000000000011100011111x0000000000010001001x0000000000010001001111x0000000000010001001x0000000000010001001x0000000000001110001x0x0x0x000100000001111100111110011111x00010000000001000010000001x00010000000001000011110001x00010000000001000010000001111x00010000000001000010000001x000111111001111100100000011111";
+		String JACKIE = "00000000000000000000000000000000000x01111100011100001100010010011111001111100x0001000010001001001001010000010000000000000x000100001111100100000110000001000011110000000x010100001000100100100101000001000010000x0010000010001000110001001001111100111110";
+		String CSSE220 = "000000000x001111000111000111001111100x01000000100000100000100000000x0100000001100001100011110000x01000000000100000100100000000000x00111100111000111000111110000x0000000x0000000x000011110000111100001110000x0001000100010001000100010x0000001000000010000100010000x0000010000000100000100010000x0001111110011111100011100";
+		String DOUBLE_GLIDER_GUN = "011000000000000000000000000000000000000x011000000000000000001000000000000000000x000000000000000000010100000000000010100x000000000000000000001000000000000100000x110000000110000000000000000000000010010x110100000110000000000000000000000010101x000100000000000000000000000100000001001x000100000000000000000000000110000000110x100100000000000000000110000010000000000x011000000000000000000100000000000000000x000000000000000000000111000000000000000x000000000000000000000000000000000000110x000000000000000000000000000000000000110x011000000000000000000000000000000000000x100100000000000000000000000000000000000x101010000000000000000101000011000001100x010010000000000000000011000011000001101x000001000000000000100010000000000000001x001010000000000001010000000000000000001x000000000000000000100000000000000001001x000000000000000000000000000000000000110";
+		// coordList.addAll(stringToCoords(JACKIE,20,34));
+		// coordList.addAll(stringToCoords(GAME_OF_LIFE, 30, 34));
+		// coordList.addAll(stringToCoords(CSSE220,30,24));
+		// coordList.addAll(stringToCoords(CSSE220,30,40));
+		coordList.addAll(stringToCoords(DOUBLE_GLIDER_GUN, 30, 30));
+
+		final GameOfLife game = new GameOfLife(coordList);
+		frame.add(game);
+
+		/*
+		 * This adds an update button to the frame. We'll cover more on how to
+		 * do this over the rest of the term.
+		 */
+		final UpdateButton updateButton = new UpdateButton(game);
+		frame.add(updateButton, BorderLayout.SOUTH);
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		Thread.sleep(4000);
+
+		ActionListener taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				game.nextGeneration();
+				game.repaint();
+			}
+		};
+		new Timer(DELAY, taskPerformer).start();
+		// Optional: Add a Timer here to click the button every 50 milliseconds.
+		// When importing the Timer, choose the javax.swing Timer.
+
+	}
+
+	/**
+	 * @return a list of coordinates representing the glider configuration
+	 */
+	private static ArrayList<Coordinates> getGliderList() {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+		// default glider
+		coordList.add(new Coordinates(80, 1));
+		coordList.add(new Coordinates(80, 2));
+		coordList.add(new Coordinates(80, 3));
+		coordList.add(new Coordinates(81, 3));
+		coordList.add(new Coordinates(82, 2));
+
+		return coordList;
+	}
+
+	private static ArrayList<Coordinates> getOctagonList() {
+
+		// Octagon creator
+		// Source: Wikipedia
+
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+		coordList.add(new Coordinates(60, 42));
+		coordList.add(new Coordinates(60, 45));
+		coordList.add(new Coordinates(61, 41));
+		coordList.add(new Coordinates(61, 43));
+		coordList.add(new Coordinates(61, 44));
+		coordList.add(new Coordinates(61, 46));
+		coordList.add(new Coordinates(62, 42));
+		coordList.add(new Coordinates(62, 45));
+		coordList.add(new Coordinates(63, 42));
+		coordList.add(new Coordinates(63, 45));
+		coordList.add(new Coordinates(64, 41));
+		coordList.add(new Coordinates(64, 43));
+		coordList.add(new Coordinates(64, 44));
+		coordList.add(new Coordinates(64, 46));
+		coordList.add(new Coordinates(65, 42));
+		coordList.add(new Coordinates(65, 45));
+
+		return coordList;
+	}
+
+	private static ArrayList<Coordinates> getFunList() {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		// points for fun
+		coordList.add(new Coordinates(20, 40));
+		coordList.add(new Coordinates(20, 41));
+		coordList.add(new Coordinates(20, 42));
+		coordList.add(new Coordinates(20, 43));
+		coordList.add(new Coordinates(21, 40));
+		coordList.add(new Coordinates(19, 40));
+
+		return coordList;
+	}
+
+	private static ArrayList<String> funCoords() {
+		ArrayList<String> stringList = new ArrayList<String>();
+		stringList.add("1");
+		stringList.add("1111");
+		stringList.add("1");
+		return stringList;
+
+	}
+
+	private static ArrayList<String> doubleGliderGun() {
+
+		/*
+		 * Source: http://www.argentum.freeserve.co.uk/lex_b.htm
+		 */
+
+		// no longer used, but kept for posterity's sake
+
+		ArrayList<String> stringList = new ArrayList<String>();
+		stringList.add("011000000000000000000000000000000000000");
+		stringList.add("011000000000000000001000000000000000000");
+		stringList.add("000000000000000000010100000000000010100");
+		stringList.add("000000000000000000001000000000000100000");
+		stringList.add("110000000110000000000000000000000010010");
+		stringList.add("110100000110000000000000000000000010101");
+		stringList.add("000100000000000000000000000100000001001");
+		stringList.add("000100000000000000000000000110000000110");
+		stringList.add("100100000000000000000110000010000000000");
+		stringList.add("011000000000000000000100000000000000000");
+		stringList.add("000000000000000000000111000000000000000");
+		stringList.add("000000000000000000000000000000000000110");
+		stringList.add("000000000000000000000000000000000000110");
+		stringList.add("011000000000000000000000000000000000000");
+		stringList.add("100100000000000000000000000000000000000");
+		stringList.add("101010000000000000000101000011000001100");
+		stringList.add("010010000000000000000011000011000001101");
+		stringList.add("000001000000000000100010000000000000001");
+		stringList.add("001010000000000001010000000000000000001");
+		stringList.add("000000000000000000100000000000000001001");
+		stringList.add("000000000000000000000000000000000000110");
+
+		return stringList;
+	}
+
+	private static ArrayList<Coordinates> stringToCoords(String input,
+			int x_offset, int y_offset) {
+
+		/**
+		 * Takes a String and turns it into an ArrayList of Coordinates.
+		 * String has 0's to represent dead cells, 1 for live cells.
+		 * For muti-line setups, the string should contain 'x' characters
+		 * between each line.
+		 * 
+		 * For example, this plus sign:
+		 * 010
+		 * 111
+		 * 010
+		 * 
+		 * Would be entered as:
+		 * "010x111x010"
+		 */
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		String[] splitString = input.split("x");
+
+		for (int i = 0; i < splitString.length; i++) {
+			for (int j = 0; j < splitString[i].length(); j++) {
+				if (splitString[i].charAt(j) == '1') {
+					coordList.add(new Coordinates(i + y_offset, j + x_offset));
+
+				}
+
+			}
+
+		}
+
+		return coordList;
+	}
+
+	private static ArrayList<Coordinates> stringArrayListToCoords(
+			ArrayList<String> stringList, int x_offset, int y_offset) {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		/**
+		 * Takes a block of strings, turns them into coordinates.
+		 * Useful for taking preexisting designs and playing with them.
+		 * 
+		 * See doubleGliderGun above for an example. This is not used any more,
+		 * but is kept for posterity's sake.
+		 * 
+		 */
+
+		for (int i = 0; i < stringList.size(); i++) {
+			for (int j = 0; j < stringList.get(i).length(); j++) {
+				if (stringList.get(i).charAt(j) == '1') {
+					coordList.add(new Coordinates(i + y_offset, j + x_offset));
+
+				}
+
+			}
+
+		}
+		return coordList;
+	}
+
+}

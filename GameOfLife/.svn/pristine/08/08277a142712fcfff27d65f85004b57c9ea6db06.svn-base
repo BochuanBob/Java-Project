@@ -1,0 +1,191 @@
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.Timer;
+
+/**
+ * This class is the starting point for the simulator for Conway's Game of Life.
+ * 
+ * @author TODO 0: [YOUR NAMES HERE]. Created Sep 24, 2008.
+ */
+public class GameOfLifeMain {
+
+	private static final int WIDTH = 630;
+	private static final int HEIGHT = 750;
+	private static int DELAY = 50; // milliseconds
+
+	/**
+	 * Starts the program
+	 * 
+	 * @param args
+	 *            ignored
+	 */
+	public static void main(String[] args) {
+		JFrame frame = new JFrame();
+		final int WIDTH_OFFSET = 18;
+		final int HEIGHT_OFFSET = -49;
+
+		frame.setSize(WIDTH + WIDTH_OFFSET, HEIGHT+HEIGHT_OFFSET);
+		frame.setTitle("Conway's Game of Life");
+
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+		// coordList.addAll(getGliderList());
+		// coordList.addAll(getOctagonList());
+		// coordList.addAll(getFunList());
+		
+		coordList.addAll(stringsToCoords(doubleGliderGun(),25,35));
+
+		coordList.add(new Coordinates(89, 1));
+		coordList.add(new Coordinates(89, 2));
+		coordList.add(new Coordinates(0, 1));
+		coordList.add(new Coordinates(0, 2));
+
+		final GameOfLife game = new GameOfLife(coordList);
+		frame.add(game);
+
+		game.printCellArray();
+		/*
+		 * This adds an update button to the frame. We'll cover more on how to
+		 * do this over the rest of the term.
+		 */
+		final UpdateButton updateButton = new UpdateButton(game);
+		frame.add(updateButton, BorderLayout.SOUTH);
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		ActionListener taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				game.nextGeneration();
+				game.repaint();
+			}
+		};
+		new Timer(DELAY, taskPerformer).start();
+		// Optional: Add a Timer here to click the button every 50 milliseconds.
+		// When importing the Timer, choose the javax.swing Timer.
+
+	}
+
+	/**
+	 * @return a list of coordinates representing the glider configuration
+	 */
+	private static ArrayList<Coordinates> getGliderList() {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+		// default glider
+		coordList.add(new Coordinates(80, 1));
+		coordList.add(new Coordinates(80, 2));
+		coordList.add(new Coordinates(80, 3));
+		coordList.add(new Coordinates(81, 3));
+		coordList.add(new Coordinates(82, 2));
+
+		return coordList;
+	}
+
+	private static ArrayList<Coordinates> getOctagonList() {
+
+		// Octagon creator
+		// Source: Wikipedia
+
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+		coordList.add(new Coordinates(60, 42));
+		coordList.add(new Coordinates(60, 45));
+		coordList.add(new Coordinates(61, 41));
+		coordList.add(new Coordinates(61, 43));
+		coordList.add(new Coordinates(61, 44));
+		coordList.add(new Coordinates(61, 46));
+		coordList.add(new Coordinates(62, 42));
+		coordList.add(new Coordinates(62, 45));
+		coordList.add(new Coordinates(63, 42));
+		coordList.add(new Coordinates(63, 45));
+		coordList.add(new Coordinates(64, 41));
+		coordList.add(new Coordinates(64, 43));
+		coordList.add(new Coordinates(64, 44));
+		coordList.add(new Coordinates(64, 46));
+		coordList.add(new Coordinates(65, 42));
+		coordList.add(new Coordinates(65, 45));
+
+		return coordList;
+	}
+
+	private static ArrayList<Coordinates> getFunList() {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		// points for fun
+		coordList.add(new Coordinates(20, 40));
+		coordList.add(new Coordinates(20, 41));
+		coordList.add(new Coordinates(20, 42));
+		coordList.add(new Coordinates(20, 43));
+		coordList.add(new Coordinates(21, 40));
+		coordList.add(new Coordinates(19, 40));
+
+		return coordList;
+	}
+	
+	private static ArrayList<String> funCoords(){
+		ArrayList<String> stringList = new ArrayList<String>();
+		stringList.add("1");
+		stringList.add("1111");
+		stringList.add("1");
+		return stringList;
+		
+	}
+
+	private static ArrayList<String> doubleGliderGun() {
+
+		/*
+		 * Source: http://www.argentum.freeserve.co.uk/lex_b.htm
+		 */
+
+		ArrayList<String> stringList = new ArrayList<String>();
+		stringList.add("011000000000000000000000000000000000000");
+		stringList.add("011000000000000000001000000000000000000");
+		stringList.add("000000000000000000010100000000000010100");
+		stringList.add("000000000000000000001000000000000100000");
+		stringList.add("110000000110000000000000000000000010010");
+		stringList.add("110100000110000000000000000000000010101");
+		stringList.add("000100000000000000000000000100000001001");
+		stringList.add("000100000000000000000000000110000000110");
+		stringList.add("100100000000000000000110000010000000000");
+		stringList.add("011000000000000000000100000000000000000");
+		stringList.add("000000000000000000000111000000000000000");
+		stringList.add("000000000000000000000000000000000000110");
+		stringList.add("000000000000000000000000000000000000110");
+		stringList.add("011000000000000000000000000000000000000");
+		stringList.add("100100000000000000000000000000000000000");
+		stringList.add("101010000000000000000101000011000001100");
+		stringList.add("010010000000000000000011000011000001101");
+		stringList.add("000001000000000000100010000000000000001");
+		stringList.add("001010000000000001010000000000000000001");
+		stringList.add("000000000000000000100000000000000001001");
+		stringList.add("000000000000000000000000000000000000110");
+
+		return stringList;
+	}
+
+	private static ArrayList<Coordinates> stringsToCoords(
+			ArrayList<String> stringList, int x_offset, int y_offset) {
+		ArrayList<Coordinates> coordList = new ArrayList<Coordinates>();
+
+		/**
+		 * Takes a block of strings, turns them into coordinates.
+		 * Useful for taking preexisting designs and playing with them.
+		 * 
+		 */
+
+		
+		for (int i = 0; i < stringList.size(); i++) {
+			for (int j = 0; j < stringList.get(i).length(); j++) {
+				if (stringList.get(i).charAt(j) == '1') {
+					coordList.add(new Coordinates(i + y_offset, j + x_offset));
+
+				}
+
+			}
+
+		}
+		return coordList;
+	}
+
+}
